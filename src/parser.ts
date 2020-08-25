@@ -744,86 +744,86 @@ export class Parser {
         stmt => ts.isExpressionStatement(stmt) || ts.isVariableStatement(stmt)
       )
     ];
+    return {};
+    // return possibleStatements.reduce((res, statement) => {
+    //   if (statementIsClassDeclaration(statement) && statement.members.length) {
+    //     const possibleDefaultProps = statement.members.filter(
+    //       member =>
+    //         member.name && getPropertyName(member.name) === 'defaultProps'
+    //     );
 
-    return possibleStatements.reduce((res, statement) => {
-      if (statementIsClassDeclaration(statement) && statement.members.length) {
-        const possibleDefaultProps = statement.members.filter(
-          member =>
-            member.name && getPropertyName(member.name) === 'defaultProps'
-        );
+    //     if (!possibleDefaultProps.length) {
+    //       return res;
+    //     }
 
-        if (!possibleDefaultProps.length) {
-          return res;
-        }
+    //     const defaultProps = possibleDefaultProps[0];
+    //     let initializer = (defaultProps as ts.PropertyDeclaration).initializer;
+    //     let properties = (initializer as ts.ObjectLiteralExpression).properties;
 
-        const defaultProps = possibleDefaultProps[0];
-        let initializer = (defaultProps as ts.PropertyDeclaration).initializer;
-        let properties = (initializer as ts.ObjectLiteralExpression).properties;
+    //     while (ts.isIdentifier(initializer as ts.Identifier)) {
+    //       const defaultPropsReference = this.checker.getSymbolAtLocation(
+    //         initializer as ts.Node
+    //       );
+    //       if (defaultPropsReference) {
+    //         const declarations = defaultPropsReference.getDeclarations();
 
-        while (ts.isIdentifier(initializer as ts.Identifier)) {
-          const defaultPropsReference = this.checker.getSymbolAtLocation(
-            initializer as ts.Node
-          );
-          if (defaultPropsReference) {
-            const declarations = defaultPropsReference.getDeclarations();
+    //         if (declarations) {
+    //           initializer = (declarations[0] as ts.VariableDeclaration)
+    //             .initializer;
+    //           properties = (initializer as ts.ObjectLiteralExpression)
+    //             .properties;
+    //         }
+    //       }
+    //     }
 
-            if (declarations) {
-              initializer = (declarations[0] as ts.VariableDeclaration)
-                .initializer;
-              properties = (initializer as ts.ObjectLiteralExpression)
-                .properties;
-            }
-          }
-        }
+    //     let propMap = {};
 
-        let propMap = {};
+    //     if (properties) {
+    //       propMap = this.getPropMap(
+    //         properties as ts.NodeArray<ts.PropertyAssignment>
+    //       );
+    //     }
 
-        if (properties) {
-          propMap = this.getPropMap(
-            properties as ts.NodeArray<ts.PropertyAssignment>
-          );
-        }
+    //     return {
+    //       ...res,
+    //       ...propMap
+    //     };
+    //   } else if (statementIsStatelessWithDefaultProps(statement)) {
+    //     let propMap = {};
+    //     (statement as ts.ExpressionStatement).getChildren().forEach(child => {
+    //       const { right } = child as ts.BinaryExpression;
+    //       if (right) {
+    //         const { properties } = right as ts.ObjectLiteralExpression;
+    //         if (properties) {
+    //           propMap = this.getPropMap(
+    //             properties as ts.NodeArray<ts.PropertyAssignment>
+    //           );
+    //         }
+    //       }
+    //     });
+    //     return {
+    //       ...res,
+    //       ...propMap
+    //     };
+    //   } else {
+    //   }
 
-        return {
-          ...res,
-          ...propMap
-        };
-      } else if (statementIsStatelessWithDefaultProps(statement)) {
-        let propMap = {};
-        (statement as ts.ExpressionStatement).getChildren().forEach(child => {
-          const { right } = child as ts.BinaryExpression;
-          if (right) {
-            const { properties } = right as ts.ObjectLiteralExpression;
-            if (properties) {
-              propMap = this.getPropMap(
-                properties as ts.NodeArray<ts.PropertyAssignment>
-              );
-            }
-          }
-        });
-        return {
-          ...res,
-          ...propMap
-        };
-      } else {
-      }
+    //   const functionStatement = this.getFunctionStatement(statement);
 
-      const functionStatement = this.getFunctionStatement(statement);
+    //   // Extracting default values from props destructuring
+    //   if (functionStatement && functionStatement.parameters.length) {
+    //     const { name } = functionStatement.parameters[0];
 
-      // Extracting default values from props destructuring
-      if (functionStatement && functionStatement.parameters.length) {
-        const { name } = functionStatement.parameters[0];
+    //     if (ts.isObjectBindingPattern(name)) {
+    //       return {
+    //         ...res,
+    //         ...this.getPropMap(name.elements)
+    //       };
+    //     }
+    //   }
 
-        if (ts.isObjectBindingPattern(name)) {
-          return {
-            ...res,
-            ...this.getPropMap(name.elements)
-          };
-        }
-      }
-
-      return res;
-    }, {});
+    //   return res;
+    // }, {});
   }
 
   public getLiteralValueFromPropertyAssignment(
